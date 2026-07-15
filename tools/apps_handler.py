@@ -9,9 +9,9 @@ def start_app(path=""):
     try:
         comando = f'start "" "{path}"'
         command = subprocess.Popen(comando, shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE)
-        return True
     except Exception as e:
         return e
+    return 1
 
 def find_app(app_name=""):
     result = subprocess.run(['where', app_name], shell=True, capture_output=True, text=True)
