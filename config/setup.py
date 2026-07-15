@@ -37,7 +37,7 @@ def run_setup():
         system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
         if not system_prompt:
             system_prompt = "You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands."
-        system_prompt = system_prompt + " You can send toast notification using 'send_toast' function. You can run commands with the 'run_commands' function, and if needed to access the user directory, use %USERPROFILE%. You can use 'find_app_path' to find where apps where located."
+        system_prompt = system_prompt + " You can send toast notification using 'send_toast' function. You can run commands with the 'run_commands' function, and if needed to access the user directory, use %USERPROFILE%. You can use 'find_app_path' to find where apps where located. You can open websites with 'open_website'."
         preload.settings["system_prompt"] = system_prompt
         break
     preload.save_settings()
