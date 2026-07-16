@@ -31,14 +31,14 @@ system_prompt = preload.settings['system_prompt']
 model_name = preload.settings['model']
 
 if preload.history_path.is_file():
-    use_history = input("Há um historico de conversa já existente. Quer usar-lo agora? \n (y/n)")
+    use_history = input("There is an chat history saved. Do you want to proceed this conversation?\n (y/n)")
     if use_history.lower() == 'y':
         messages = preload.load_history()
-        messages.append({"role": "user", "content": "Eu voltei."})
+        messages.append({"role": "user", "content": "I'm Back."})
     if use_history.lower() == 'n':
         messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": "Olá!"},
+        {"role": "user", "content": "HI!"},
         ]
 
         anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True)
@@ -71,7 +71,7 @@ while True:
     question = input("User: ")
     
     if question.lower() == "quit":
-        preload.add_to_history({"role": "user", "content": "Tchau"})
+        preload.add_to_history({"role": "user", "content": "Bye!"})
         preload.save_history()
         break
     
