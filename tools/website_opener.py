@@ -1,6 +1,9 @@
 import subprocess
 # this gotta be the WORST name i've ever given to a script. i gotta rename it to something better later and i HOPE this happens
 def open_website(url=""):
+    """
+    Opens an URL on the default system web browser. Use ONLY when asked or needed to open an URL for the user.
+    """
     if not r"https://" in url:
         url = fr"https://{url}"
     try:
