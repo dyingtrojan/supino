@@ -87,7 +87,8 @@ while True:
         print(chunk.message.content, end='', flush=True)
         content += chunk.message.content
         if chunk.message.tool_calls:
-            print(f"rodando tool: {chunk.message.tool_calls}" )
+            print('\n')
+            print(f"Running tool: {chunk.message.tool_calls}")
             tool_calls.extend(chunk.message.tool_calls)
             func = available_functions.get(tool_calls[tools_index].function.name)
             tool_called = tool_calls[tools_index]
@@ -96,15 +97,17 @@ while True:
                 messages.append({"role": "tool", "name": tool_called.function.name, "content": str(result)})
                 preload.add_to_history({"role": "tool", "name": tool_called.function.name, "content": str(result)})
                 tools_index += 1
-                follow_up = ollama.chat(model=model_name, messages=messages, stream=True)
-                print("\n")
-            print("Bot: ", end='', flush=True)
-            response = ""
-            for chunk in follow_up:
-                print(chunk.message.content, end='', flush=True)
-                response += chunk.message.content
-            print("\n")
-            messages.append({"role": "assistant", "content": response})
-            preload.add_to_history({"role": "assistant", "content": response})
+    print("\n")
+    if tool_calls:
+        follow_up = ollama.chat(model=model_name, messages=messages, stream=True)
+        print("Bot: ", end='', flush=True)
+        response = ""
+        for chunk in follow_up:
+            print(chunk.message.content, end='', flush=True)
+            response += chunk.message.content
+        print("\n")
+        messages.append({"role": "assistant", "content": response})
+        preload.add_to_history({"role": "assistant", "content": response})
     assistant_reply = content
     tools_index = 0
+    tool_calls = []
