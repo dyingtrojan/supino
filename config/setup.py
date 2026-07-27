@@ -34,7 +34,7 @@ def run_setup():
         print(f"Selected Model: {model_name}")
 
     while not save_history or (save_history.lower() != "y" or save_history.lower() != "n"):
-        save_history = input("do you want to save your chat history? (y/n): ")
+        save_history = input("Do you want to save your chat history? (y/n): ")
         if save_history.lower() == "y":
             settings.settings["save_history"] = True
             break
@@ -45,10 +45,6 @@ def run_setup():
         system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
         if not system_prompt:
             system_prompt = "You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands."
-    
         settings.settings["system_prompt"] = system_prompt
         break
-    while not first_messsage:
-        first_messsage = input("Type a little text about you, introduce yourself to your AI agent: ")
-        settings.add_to_history({"role": "user", "content": first_messsage})
     settings.save_settings()
