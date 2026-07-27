@@ -48,7 +48,4 @@ def run_setup():
     
         settings.settings["system_prompt"] = system_prompt
         break
-    while not first_messsage:
-        first_messsage = input("Type a little text about you, introduce yourself to your AI agent: ")
-        settings.add_to_history({"role": "user", "content": first_messsage})
     settings.save_settings()
