@@ -1,0 +1,13 @@
+import subprocess
+
+def open_website(url=""):
+    """
+    Opens an URL on the default system web browser. Use ONLY when asked or needed to open an URL for the user.
+    """
+    if not r"https://" in url:
+        url = fr"https://{url}"
+    try:
+        subprocess.Popen(["start", url], shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        return 1
+    except Exception as e:
+        return e
