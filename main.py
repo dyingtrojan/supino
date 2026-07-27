@@ -1,5 +1,5 @@
 import ollama, subprocess, pyfiglet
-from tools import apps_handler, toast_notification, code_runner, website_opener
+from tools import apps_handler, toast_notification, code_runner, website_handler
 from config import settings, setup
 from pathlib import Path
 
@@ -10,7 +10,7 @@ print(pyfiglet.figlet_format("mace's", font='digital'))
 print(pyfiglet.figlet_format("S U P I N O", font='nipples'))
 settings.load_settings()
 
-tools = [toast_notification.send_toast, code_runner.run_command, apps_handler.start_app, apps_handler.find_app, website_opener.open_website]
+tools = [toast_notification.send_toast, code_runner.run_command, apps_handler.start_app, apps_handler.find_app, website_handler.open_website]
 messages = []
 system_prompt = settings.settings['system_prompt']
 model_name = settings.settings['model']
@@ -61,7 +61,7 @@ while True:
     
     anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True)
     tool_calls = []
-    available_functions = {"send_toast": toast_notification.send_toast, "run_commands": code_runner.run_command, "start_app": apps_handler.start_app, "find_app": apps_handler.find_app, "open_website": website_opener.open_website}
+    available_functions = {"send_toast": toast_notification.send_toast, "run_commands": code_runner.run_command, "start_app": apps_handler.start_app, "find_app": apps_handler.find_app, "open_website": website_handler.open_website}
     tools_index = 0
     print('\n')
     print("Bot: ", end='', flush=True)
