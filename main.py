@@ -1,5 +1,6 @@
-import ollama, subprocess, pyfiglet
+import ollama, subprocess, pyfiglet, asyncio
 from tools import apps_handler, toast_notification, code_runner, website_handler
+from speech import text_to_speech
 from config import settings, setup
 from pathlib import Path
 
@@ -45,12 +46,19 @@ for chunk in anwser:
     print(chunk.message.content, end='', flush=True)
     content += chunk.message.content
 print("\n")
+text_to_speech.speak(content)
 messages.append({"role": "assistant", "content": content})
 settings.add_to_history({"role": "assistant", "content": content})
 
 while True:
     content = ""
-    question = input("User: ")
+    try:
+        question = input("User: ")
+    except KeyboardInterrupt:
+        print("App interrupted by user.")
+        settings.add_to_history({"role": "user", "content": "Bye!"})
+        settings.save_history()
+        break
     if question.lower() == "quit":
         settings.add_to_history({"role": "user", "content": "Bye!"})
         settings.save_history()
@@ -65,6 +73,7 @@ while True:
     tools_index = 0
     print('\n')
     print("Bot: ", end='', flush=True)
+    
     for chunk in anwser:
         print(chunk.message.content, end='', flush=True)
         content += chunk.message.content
@@ -80,6 +89,7 @@ while True:
                 settings.add_to_history({"role": "tool", "name": tool_called.function.name, "content": str(result)})
                 tools_index += 1
     print("\n")
+    text_to_speech.speak(content)
     if tool_calls:
         follow_up = ollama.chat(model=model_name, messages=messages, stream=True)
         print("Bot: ", end='', flush=True)
@@ -93,3 +103,4 @@ while True:
     assistant_reply = content
     tools_index = 0
     tool_calls = []
+    text_to_speech.speak(response)
