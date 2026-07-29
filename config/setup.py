@@ -54,7 +54,6 @@ def run_setup():
         system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
         if not system_prompt:
             system_prompt = "You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands."
-    
         settings.settings["system_prompt"] = system_prompt
         break
     settings.save_settings()
