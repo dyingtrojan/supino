@@ -9,7 +9,7 @@ An AI agent for controlling your pc, with functions like opening apps, websites,
 1. Make sure you have Ollama installed, and install a model WITH tools supported
 2. Install these packages
 ```
-pip install ollama pyfiglet plyer
+pip install ollama pyfiglet plyer pyttsx3
 ```
 After that, you can run on your terminal:
 ```
