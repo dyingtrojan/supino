@@ -1,0 +1,33 @@
+txt_colors = {
+    "black" : "\033[1;30m",
+    "white" : "\033[1;97m",
+    "light_gray" : "\033[1;37m",
+    "dark_gray" :  "\033[1;90m",
+    "red" : "\033[1;31m",
+    "green" : "\033[1;32m",
+    "yellow" : "\033[1;33m",
+    "light_yellow" : "\033[1;93m",
+    "blue" : "\033[1;34m",
+    "light_blue" : "\033[1;94m",
+    "cyan" : "\033[1;36m",
+    "light_cyan" : "\033[1;96m",
+    "bold" : "\033[1m",
+    "RESET" : "\033[0;0m",
+}
+
+back_colors = {
+    "black" : "\033[1;40m",
+    "white" : "\033[1;107m",
+    "light_gray" : "\033[1;47m",
+    "dark_gray" :  "\033[1;100m",
+    "red" : "\033[1;41m",
+    "green" : "\033[1;42m",
+    "yellow" : "\033[1;43m",
+    "light_yellow" : "\033[1;103m",
+    "blue" : "\033[1;44m",
+    "light_blue" : "\033[1;104m",
+    "cyan" : "\033[1;46m",
+    "light_cyan" : "\033[1;47m",
+    "bold" : "\033[1m",
+    "RESET" : "\033[0;0m",
+}
