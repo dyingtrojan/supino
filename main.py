@@ -5,6 +5,7 @@ from config import settings, setup
 from pathlib import Path
 
 first_messsage = ""
+use_history = ""
 
 subprocess.run(['cls'], shell=True)
 print(pyfiglet.figlet_format("mace's", font='digital'))
@@ -17,16 +18,27 @@ system_prompt = settings.settings['system_prompt']
 model_name = settings.settings['model']
 
 if settings.history_path.is_file():
-    use_history = input("There is an chat history saved. Do you want to proceed this conversation?\n (y/n)")
-    if use_history.lower() == 'y' or use_history.lower() == 'yes':
+    if settings.settings['always_load_chat'] != True or settings.settings["always_load_chat"] != None:
         messages = settings.load_history()
         messages.append({"role": "user", "content": "I'm Back."})
+    else:    
+        while not use_history:
+            use_history = input("There is an chat history saved. Do you want to proceed this conversation?\n (y/n/a (always))")
+            if use_history.lower() == 'y' or use_history.lower() == 'yes':
+                messages = settings.load_history()
+                messages.append({"role": "user", "content": "I'm Back."})    
+            elif use_history.lower() == 'n' or use_history.lower() == 'no':
+                messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Hi!"},
+                ]
+            elif use_history.lower() == 'a' or use_history.lower() == 'always':
+                messages = settings.load_history()
+                messages.append({"role": "user", "content": "I'm Back."})
+                settings.settings["always_load_chat"] == True
+            else:
+                use_history = ""
         
-    if use_history.lower() == 'n' or use_history.lower() == 'no':
-        messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": "Hi!"},
-        ]
 else:
     try:
         while not first_messsage:
@@ -46,7 +58,8 @@ for chunk in anwser:
     print(chunk.message.content, end='', flush=True)
     content += chunk.message.content
 print("\n")
-text_to_speech.speak(content)
+if settings.settings["tts_enabled"] == True:
+    text_to_speech.speak(content)
 messages.append({"role": "assistant", "content": content})
 settings.add_to_history({"role": "assistant", "content": content})
 
@@ -89,7 +102,8 @@ while True:
                 settings.add_to_history({"role": "tool", "name": tool_called.function.name, "content": str(result)})
                 tools_index += 1
     print("\n")
-    text_to_speech.speak(content)
+    if settings.settings["tts_enabled"] == True:
+        text_to_speech.speak(content)
     if tool_calls:
         follow_up = ollama.chat(model=model_name, messages=messages, stream=True)
         print("Bot: ", end='', flush=True)
@@ -103,4 +117,5 @@ while True:
     assistant_reply = content
     tools_index = 0
     tool_calls = []
-    text_to_speech.speak(response)
+    if settings.settings["tts_enabled"] == True:
+        text_to_speech.speak(response)

@@ -8,12 +8,14 @@ save_history = ""
 model_name = ""
 system_prompt = ""
 first_messsage = ""
+always_load_history = ''
+enable_tts = ""
 available_models = []
 model_list = ollama.list()
 
 
 def run_setup():
-    global model_name, save_history, system_prompt, first_messsage
+    global model_name, save_history, system_prompt, first_messsage, always_load_history, enable_tts
     while not model_name:
         print("MODELS: ")
         i = 1
@@ -40,6 +42,22 @@ def run_setup():
             break
         else:
             settings.settings["save_history"] = False
+            break
+    while not always_load_history:
+        always_load_history = input("Do you want to load your chat history everytime you open SUPINO? (y/n/a (ask)): ")
+        if always_load_history.lower() == "y":
+            settings.settings['always_load_chat'] = True
+            break
+        if always_load_history.lower() == "n" or always_load_history.lower() == "a":
+            settings.settings['always_load_chat'] = False
+            break
+    while not enable_tts:
+        enable_tts = input("Do you want to enable Text to speech? (y/n) ")
+        if enable_tts.lower() == 'y':
+            settings.settings["tts_enabled"] = True
+            break
+        elif enable_tts.lower() == 'n':
+            settings.settings["tts_enabled"] = False
             break
     while not system_prompt:
         system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
