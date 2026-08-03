@@ -2,7 +2,6 @@
 ---
 ## IMPORTANT WARNING:
 this is an still Work in progress. I am NOT responsible for whatever happens on your pc. Please, BE 100% AWARE that this is an AI of YOUR choice running this.
-
 ---
 An AI agent for controlling your pc, with functions like opening apps, websites, etc.
 ## How to install the source code:

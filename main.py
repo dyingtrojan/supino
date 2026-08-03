@@ -1,15 +1,32 @@
-import ollama, subprocess, pyfiglet, asyncio
+import ollama, subprocess, pyfiglet, random
 from tools import apps_handler, toast_notification, code_runner, website_handler
 from speech import text_to_speech
 from config import settings, setup
 from pathlib import Path
+from misc import colors
 
 first_messsage = ""
 use_history = ""
 
+title_screen = pyfiglet.figlet_format("S U P I N O", font="alligator2")
+
+font_array_pyfiglet = pyfiglet.FigletFont.getFonts()
+
 subprocess.run(['cls'], shell=True)
-print(pyfiglet.figlet_format("mace's", font='digital'))
-print(pyfiglet.figlet_format("S U P I N O", font='nipples'))
+print(colors.txt_colors["light_gray"] + f"{pyfiglet.figlet_format("mace's", font='digital')}" + colors.txt_colors["RESET"])
+      
+interation = 0
+for line in title_screen.splitlines():
+    if interation < 2:
+        print(colors.txt_colors["light_gray"] + f"{line}" + colors.txt_colors["RESET"])
+    elif interation < 4:
+        print(colors.txt_colors["cyan"] + f"{line}" + colors.txt_colors["RESET"])
+    elif interation < 5:
+        print(colors.txt_colors["blue"] + f"{line}" + colors.txt_colors["RESET"])
+    elif interation < 8:
+        print(colors.txt_colors["light_blue"] + f"{line}" + colors.txt_colors["RESET"])
+    interation += 1
+print("\n")
 settings.load_settings()
 
 tools = [toast_notification.send_toast, code_runner.run_command, apps_handler.start_app, apps_handler.find_app, website_handler.open_website]
