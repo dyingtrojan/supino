@@ -75,7 +75,7 @@ for chunk in anwser:
     print(chunk.message.content, end='', flush=True)
     content += chunk.message.content
 print("\n")
-if settings.settings["tts_enabled"] == True:
+if settings.settings['enable_tts'] == True:
     text_to_speech.speak(content)
 messages.append({"role": "assistant", "content": content})
 settings.add_to_history({"role": "assistant", "content": content})
@@ -119,7 +119,7 @@ while True:
                 settings.add_to_history({"role": "tool", "name": tool_called.function.name, "content": str(result)})
                 tools_index += 1
     print("\n")
-    if settings.settings["tts_enabled"] == True:
+    if settings.settings['enable_tts'] == True:
         text_to_speech.speak(content)
     if tool_calls:
         follow_up = ollama.chat(model=model_name, messages=messages, stream=True)
@@ -134,5 +134,5 @@ while True:
     assistant_reply = content
     tools_index = 0
     tool_calls = []
-    if settings.settings["tts_enabled"] == True:
+    if settings.settings['enable_tts'] == True:
         text_to_speech.speak(response)

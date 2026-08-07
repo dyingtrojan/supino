@@ -9,7 +9,7 @@ model_name = ""
 system_prompt = ""
 first_messsage = ""
 always_load_history = ''
-enable_tts = ""
+enable_tts = ''
 available_models = []
 model_list = ollama.list()
 
@@ -52,12 +52,12 @@ def run_setup():
             settings.settings['always_load_chat'] = False
             break
     while not enable_tts:
-        enable_tts = input("Do you want to enable Text to speech? (y/n) ")
-        if enable_tts.lower() == 'y':
-            settings.settings["tts_enabled"] = True
+        enable_tts = input("Do you want to enable TTS (Text To Speech)? (y/n): ")
+        if enable_tts.lower() == "y":
+            settings.settings['enable_tts'] = True
             break
-        elif enable_tts.lower() == 'n':
-            settings.settings["tts_enabled"] = False
+        if enable_tts.lower() == "n":
+            settings.settings['enable_tts'] = False
             break
     while not system_prompt:
         system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
