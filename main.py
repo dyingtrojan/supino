@@ -6,6 +6,7 @@ title_text.show_title()
 parser = argparse.ArgumentParser(description="An AI agent app.")
 parser.add_argument("start", help="Starts SUPINO")
 parser.add_argument("setup", help="Setup SUPINO")
+parser.add_argument("settings", help="Acess the settings for SUPINO")
 args = parser.parse_args()
 
 if args.start:
