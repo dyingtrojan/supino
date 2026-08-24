@@ -60,7 +60,7 @@ def start_chat():
         print(chunk.message.content, end='', flush=True)
         content += chunk.message.content
     print("\n")
-    if settings.settings["tts_enabled"] == True:
+    if settings.settings["enable_tts"] == True:
         text_to_speech.speak(content)
     messages.append({"role": "assistant", "content": content})
     settings.add_to_history({"role": "assistant", "content": content})
@@ -84,7 +84,7 @@ def start_chat():
         
         anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True, think=False)
         tool_calls = []
-        available_functions = {"send_toast": toast_notification.send_toast, "run_commands": code_runner.run_command, "start_app": apps_handler.start_app, "find_app": apps_handler.find_app, "open_website": website_handler.open_website, "open_files": code_runner.open_file}
+        available_functions = {"send_toast": toast_notification.send_toast, "run_command": code_runner.run_command, "start_app": apps_handler.start_app, "find_app": apps_handler.find_app, "open_website": website_handler.open_website}
         tools_index = 0
         print('\n')
         print("Bot: ", end='', flush=True)
@@ -93,23 +93,23 @@ def start_chat():
             print(chunk.message.content, end='', flush=True)
             content += chunk.message.content
             if chunk.message.tool_calls:
-                print('\n')
-                print(f"Running tool: {chunk.message.tool_calls}")
                 tool_calls.extend(chunk.message.tool_calls)
                 func = available_functions.get(tool_calls[tools_index].function.name)
                 tool_called = tool_calls[tools_index]
                 if func:
+                    print(colors.txt_colors["yellow"] + "Running tool: " + colors.txt_colors["RESET"] + tool_called.function.name)
+                    print(colors.txt_colors["yellow"] + "Tool arguments: " + colors.txt_colors["RESET"] + str(tool_called.function.arguments))
                     result = func(**tool_called.function.arguments)
                     messages.append({"role": "tool", "name": tool_called.function.name, "content": str(result)})
                     settings.add_to_history({"role": "tool", "name": tool_called.function.name, "content": str(result)})
                     tools_index += 1
         print("\n")
-        if settings.settings["tts_enabled"] == True:
+        response = ""
+        if settings.settings["enable_tts"] == True:
             text_to_speech.speak(content)
         if tool_calls:
             follow_up = ollama.chat(model=model_name, messages=messages, stream=True)
             print("Bot: ", end='', flush=True)
-            response = ""
             for chunk in follow_up:
                 print(chunk.message.content, end='', flush=True)
                 response += chunk.message.content
@@ -119,5 +119,5 @@ def start_chat():
         assistant_reply = content
         tools_index = 0
         tool_calls = []
-        if settings.settings["tts_enabled"] == True:
+        if settings.settings["enable_tts"] == True:
             text_to_speech.speak(response)
