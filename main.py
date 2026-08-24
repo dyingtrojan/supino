@@ -1,13 +1,21 @@
 import argparse
 from misc import title_text
 import chat
+from config import setup
 
 title_text.show_title()
 parser = argparse.ArgumentParser(description="An AI agent app.")
-parser.add_argument("start", help="Starts SUPINO")
-parser.add_argument("setup", help="Setup SUPINO")
-parser.add_argument("settings", help="Acess the settings for SUPINO")
+subparser = parser.add_subparsers(dest="mode", required=True, help="Mode for SUPINO")
+
+parser_start = subparser.add_parser("start", help="Starts SUPINO")
+parser_start.set_defaults(function=chat.start_chat)
+
+parser_settings = subparser.add_parser("setup", help="Starts the setup program for SUPINO")
+parser_settings.set_defaults(function=setup.run_setup)
+
 args = parser.parse_args()
 
-if args.start:
-    chat.start_chat()
+if __name__ == "__main__":
+    match args.mode:
+        case "start":
+            chat.start_chat()

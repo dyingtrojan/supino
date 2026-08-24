@@ -26,9 +26,13 @@ def load_history():
     if not Path(history_path).is_file():
         return 1
     else:
-        with open(history_path, 'r') as file:
-            history = json.load(file)
+        try:
+            with open(history_path, 'r') as file:
+                history = json.load(file)
             return history
+        except (json.JSONDecodeError, FileNotFoundError):
+            print("History could not be loaded, maybe it doesn't exist or it's corrupted.")
+            return []
 
 def save_settings():
     global settings
@@ -42,7 +46,7 @@ def save_history():
     if not Path(history_path).is_file():
         folder.mkdir(parents=True, exist_ok=True)
     if settings['save_history'] == True:
-        with open(history_path, 'w') as file:
+        with open(history_path, 'w', encoding="utf-8") as file:
             json.dump(history, file, indent=4, ensure_ascii=False)
 
 def add_to_history(messages = {}):
