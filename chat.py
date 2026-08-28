@@ -1,20 +1,18 @@
 import ollama, subprocess, pyfiglet, random
-from tools import apps_handler, toast_notification, code_runner, website_handler
+from tools import apps_handler, toast_notification, code_runner, website_handler, todo_list
 from speech import text_to_speech
 from config import settings, setup
 from pathlib import Path
 from misc import colors, title_text
 
-
 first_messsage = ""
 use_history = ""
-
 
 def start_chat():
     global first_messsage, use_history
     settings.load_settings()
 
-    tools = [toast_notification.send_toast, code_runner.run_command, apps_handler.start_app, apps_handler.find_app, website_handler.open_website]
+    tools = [toast_notification.send_toast, code_runner.run_command, apps_handler.start_app, apps_handler.find_app, website_handler.open_website, todo_list.get_tasks, todo_list.add_task]
     messages = []
     system_prompt = settings.settings['system_prompt']
     model_name = settings.settings['model']
@@ -28,7 +26,7 @@ def start_chat():
                 use_history = input("There is an chat history saved. Do you want to proceed this conversation?\n (y/n/a (always))")
                 if use_history.lower() == 'y' or use_history.lower() == 'yes':
                     messages = settings.load_history()
-                    messages.append({"role": "user", "content": "I'm Back."})    
+                    messages.append({"role": "user", "content": "I'm Back."})
                 elif use_history.lower() == 'n' or use_history.lower() == 'no':
                     messages = [
                     {"role": "system", "content": system_prompt},
@@ -40,7 +38,6 @@ def start_chat():
                     settings.settings["always_load_chat"] == True
                 else:
                     use_history = ""
-            
     else:
         try:
             while not first_messsage:
@@ -52,6 +49,8 @@ def start_chat():
                 ]
         except Exception as e:
             print(f"An error occured: {e}")
+    if Path(todo_list.tasks_path).is_file():
+        todo_list.load_tasks()
 
     anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True)
     content = ""
@@ -73,10 +72,12 @@ def start_chat():
             print("App interrupted by user.")
             settings.add_to_history({"role": "user", "content": "Bye!"})
             settings.save_history()
+            todo_list.save_tasks()
             break
         if question.lower() == "quit":
             settings.add_to_history({"role": "user", "content": "Bye!"})
             settings.save_history()
+            todo_list.save_tasks()
             break
         
         messages.append({"role": "user", "content": question})
@@ -84,7 +85,7 @@ def start_chat():
         
         anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True, think=False)
         tool_calls = []
-        available_functions = {"send_toast": toast_notification.send_toast, "run_command": code_runner.run_command, "start_app": apps_handler.start_app, "find_app": apps_handler.find_app, "open_website": website_handler.open_website}
+        available_functions = {"send_toast": toast_notification.send_toast, "run_command": code_runner.run_command, "start_app": apps_handler.start_app, "find_app": apps_handler.find_app, "open_website": website_handler.open_website, "get_tasks": todo_list.get_tasks, "add_task": todo_list.add_task}
         tools_index = 0
         print('\n')
         print("Bot: ", end='', flush=True)
@@ -97,6 +98,10 @@ def start_chat():
                 func = available_functions.get(tool_calls[tools_index].function.name)
                 tool_called = tool_calls[tools_index]
                 if func:
+                    if tool_called.function.name == "get_tasks":
+                        print(colors.txt_colors["yellow"] + "Loading tasks..." + colors.txt_colors["RESET"])
+                    if tool_called.function.name == "add_tasks":
+                        print(colors.txt_colors["yellow"] + "Adding task..." + colors.txt_colors["RESET"])
                     print(colors.txt_colors["yellow"] + "Running tool: " + colors.txt_colors["RESET"] + tool_called.function.name)
                     print(colors.txt_colors["yellow"] + "Tool arguments: " + colors.txt_colors["RESET"] + str(tool_called.function.arguments))
                     result = func(**tool_called.function.arguments)
