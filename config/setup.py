@@ -10,6 +10,7 @@ system_prompt = ""
 first_messsage = ""
 always_load_history = ''
 enable_tts = ''
+# TODO: add custom stop conversation message.
 available_models = []
 model_list = ollama.list()
 
