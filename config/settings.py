@@ -17,7 +17,7 @@ def load_settings():
     if not Path(settings_path).is_file():
         setup.run_setup()
         return 0
-    with open(settings_path, 'r') as file:
+    with open(settings_path, 'r', encoding='utf-8') as file:
         settings = json.load(file)
     return settings
 
@@ -27,7 +27,7 @@ def load_history():
         return 1
     else:
         try:
-            with open(history_path, 'r') as file:
+            with open(history_path, 'r', encoding='utf-8') as file:
                 history = json.load(file)
             return history
         except (json.JSONDecodeError, FileNotFoundError):
@@ -38,7 +38,7 @@ def save_settings():
     global settings
     if not Path(settings_path).is_file():
         folder.mkdir(parents=True, exist_ok=True)
-    with open(settings_path, 'w') as file:
+    with open(settings_path, 'w', encoding='utf-8') as file:
         json.dump(settings, file, indent=4, ensure_ascii=False)
 
 def save_history():
