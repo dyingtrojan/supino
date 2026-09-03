@@ -3,7 +3,7 @@ from tools import apps_handler, toast_notification, code_runner, website_handler
 from speech import text_to_speech
 from config import settings
 from pathlib import Path
-from misc import colors
+from misc import colors, serialize_to_json
 
 first_messsage = ""
 use_history = ""
@@ -94,9 +94,21 @@ def start_chat():
                 if chunk.message.tool_calls:
                     tool_calls.extend(chunk.message.tool_calls)
             text_to_speech.speak(content, settings.settings["enable_tts"])
-            messages.append({"role": "assistant", "content": content})
-            settings.add_to_history({"role": "tool", "content": content})
             if tool_calls:
+                messages.append({"role": "assistant", "content": content, "tool_calls": tool_calls})
+                history_messages = {
+                    "role": "assistant", "content": content
+                }
+                history_messages["tool_calls"] = [
+                    {
+                        "function": {
+                            "name": tool.function.name,
+                            "arguments": tool.function.arguments
+                        }
+                    }
+                    for tool in tool_calls
+                ]
+                settings.add_to_history(history_messages)
                 for tool in tool_calls:
                     func = available_functions.get(tool.function.name)
                     if func:
@@ -109,6 +121,7 @@ def start_chat():
                             print(colors.txt_colors["yellow"] + "Tool arguments: " + colors.txt_colors["RESET"] + str(tool.function.arguments))
 
                     result = func(**tool.function.arguments)
+
                     messages.append({"role": "tool", "name": tool.function.name, "content": str(result)})
                     settings.add_to_history({"role": "tool", "name": tool.function.name, "content": str(result)})
                     tools_index += 1

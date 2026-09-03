@@ -4,7 +4,7 @@ from . import colors
 def show_title():
     title_screen = pyfiglet.figlet_format("S U P I N O", font="alligator2")
     
-    subprocess.run(['cls'], shell=True)
+    subprocess.run(['clear'], shell=True)
     print(colors.txt_colors["light_gray"] + f"{pyfiglet.figlet_format("mace's", font='digital')}" + colors.txt_colors["RESET"])
         
     interation = 0
