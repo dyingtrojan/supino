@@ -31,8 +31,8 @@ class TodoTask:
         )
 
 tasks = []
-tasks_path = Path(rf"{Path.home()}\AppData\Local\Supino\task.json")
-folder = Path(rf"{Path.home()}\AppData\Local\Supino")
+tasks_path = Path(rf"{Path.home()}/Supino/task.json")
+folder = Path(rf"{Path.home()}/Supino")
 
 def save_tasks():
     global tasks
