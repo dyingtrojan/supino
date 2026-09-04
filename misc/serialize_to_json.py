@@ -1,8 +1,8 @@
 def serialize_tool_calls(tool_calls):
     return [{
         "function":{
-            "name": tool.funciton.name,
-            "arguments": tool.funciton.arguments
+            "name": tool.function.name,
+            "arguments": tool.function.arguments
         }
     }
     for tool in tool_calls
