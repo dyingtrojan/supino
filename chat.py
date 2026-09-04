@@ -95,7 +95,7 @@ def start_chat():
                     tool_calls.extend(chunk.message.tool_calls)
             text_to_speech.speak(content, settings.settings["enable_tts"])
             if tool_calls:
-                messages.append({"role": "assistant", "content": content, "tool_calls": tool_calls})
+                messages.append({"role": "assistant", "content": content, "tool_calls": serialize_to_json.serialize_tool_calls(tool_calls)})
                 history_messages = {
                     "role": "assistant", "content": content
                 }
