@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 from . import setup
 
-settings_path = Path(rf"{Path.home()}\AppData\Local\Supino\settings.json")
-history_path = Path(rf"{Path.home()}\AppData\Local\Supino\history.json")
-folder = Path(rf"{Path.home()}\AppData\Local\Supino")
+settings_path = Path(rf"{Path.home()}/Supino/settings.json")
+history_path = Path(rf"{Path.home()}/Supino/history.json")
+folder = Path(rf"{Path.home()}/Supino")
 save_history = ""
 model_name = ""
 system_prompt = ""
