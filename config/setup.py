@@ -1,5 +1,5 @@
 from pathlib import Path
-import ollama
+import ollama, platform
 from . import settings
 
 settings_path = Path(rf"{Path.home()}\AppData\Local\Supino\settings.json")
@@ -10,13 +10,14 @@ system_prompt = ""
 first_messsage = ""
 always_load_history = ''
 enable_tts = ''
+os_system = ""
 # TODO: add custom stop conversation message.
 available_models = []
 model_list = ollama.list()
 
 
 def run_setup():
-    global model_name, save_history, system_prompt, first_messsage, always_load_history, enable_tts
+    global model_name, save_history, system_prompt, first_messsage, always_load_history, enable_tts, os_system
     while not model_name:
         print("MODELS: ")
         i = 1
@@ -61,9 +62,12 @@ def run_setup():
             settings.settings['enable_tts'] = False
             break
     while not system_prompt:
-        system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has access to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
+        os_system = platform.system()
+        if os_system == "darwin":
+            os_system = "MacOS"
+        system_prompt = input(f"Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has access to the user's local machine. Only use valid {os_system} commands.'): ")
         if not system_prompt:
-            system_prompt = "You are a helpful and offline assistant, and has access to the user's local machine. Only use valid CMD (Windows Command Prompt) commands."
+            system_prompt = f"You are a helpful and offline assistant, and has access to the user's local machine. Only use valid {os_system} commands."
         settings.settings["system_prompt"] = system_prompt
         break
     settings.save_settings()
