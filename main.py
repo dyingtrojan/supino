@@ -19,3 +19,6 @@ if __name__ == "__main__":
     match args.mode:
         case "start":
             chat.start_chat()
+        case "setup":
+            setup.run_setup()
+            chat.start_chat()
