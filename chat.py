@@ -29,6 +29,7 @@ def start_chat():
             while not use_history:
                 use_history = input("There is an chat history saved. Do you want to proceed this conversation?\n (y/n/a (always))")
                 if use_history.lower() != 'n' or use_history.lower() != "no":
+                    
                     if use_history.lower() == 'y' or use_history.lower() == 'a':
                         if use_history.lower() == 'a':
                             settings.settings["always_load_chat"] == True
@@ -93,9 +94,10 @@ def start_chat():
                 content += chunk.message.content
                 if chunk.message.tool_calls:
                     tool_calls.extend(chunk.message.tool_calls)
+
             text_to_speech.speak(content, settings.settings["enable_tts"])
+
             if tool_calls:
-                messages.append({"role": "assistant", "content": content, "tool_calls": serialize_to_json.serialize_tool_calls(tool_calls)})
                 history_messages = {
                     "role": "assistant", "content": content
                 }
@@ -108,6 +110,7 @@ def start_chat():
                     }
                     for tool in tool_calls
                 ]
+                messages.append(history_messages)
                 settings.add_to_history(history_messages)
                 for tool in tool_calls:
                     func = available_functions.get(tool.function.name)
