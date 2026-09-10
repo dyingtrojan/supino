@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, os
 
 def run_command(command=""):
     if not command.strip():
@@ -16,30 +16,15 @@ def run_command(command=""):
         }
 
     try:
-        result = subprocess.run(
-            command,
-            shell=True,
-            capture_output=True,
-            text=True,
-            timeout=30
+        process = subprocess.Popen(
+            command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True
         )
-
         return {
-            "success": result.returncode == 0,
-            "exit_code": result.returncode,
-            "stdout": result.stdout.strip(),
-            "stderr": result.stderr.strip(),
-            "completed": True
+            "success": process.returncode == 0,
+            "exit_code": process.returncode,
+            "message": f"Command started with PID {process.pid}",
+            "completed": True,
         }
-
-    except subprocess.TimeoutExpired:
-        return {
-            "success": False,
-            "error": "TIMEOUT",
-            "message": "The command timed out after 30 seconds.",
-            "completed": True
-        }
-
     except Exception as e:
         return {
             "success": False,
@@ -47,3 +32,10 @@ def run_command(command=""):
             "message": str(e),
             "completed": True
         }
+
+def kill_process(pid):
+    try:
+        os.kill(pid, 0)
+        return "Process {pid} killed sucesfully"
+    except OSError:
+        return OSError

@@ -11,12 +11,13 @@ first_messsage = ""
 always_load_history = ''
 enable_tts = ''
 # TODO: add custom stop conversation message.
+custom_end_chat_message = ""
 available_models = []
 model_list = ollama.list()
 
 
 def run_setup():
-    global model_name, save_history, system_prompt, first_messsage, always_load_history, enable_tts
+    global model_name, save_history, system_prompt, first_messsage, always_load_history, enable_tts, custom_end_chat_message
     while not model_name:
         print("MODELS: ")
         i = 1
@@ -60,6 +61,8 @@ def run_setup():
         if enable_tts.lower() == "n":
             settings.settings['enable_tts'] = False
             break
+    while not custom_end_chat_message:
+        custom_end_chat_message = input("Type your custom end chat message: ")
     while not system_prompt:
         system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has access to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
         if not system_prompt:

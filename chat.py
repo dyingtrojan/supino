@@ -1,5 +1,5 @@
 import ollama
-from tools import apps_handler, toast_notification, code_runner, website_handler, todo_list
+from tools import toast_notification, code_runner, website_handler, todo_list
 from speech import text_to_speech
 from config import settings
 from pathlib import Path
@@ -7,7 +7,7 @@ from misc import colors, serialize_to_json
 
 first_messsage = ""
 use_history = ""
-tools = [toast_notification.send_toast, code_runner.run_command, apps_handler.start_app, apps_handler.find_app, website_handler.open_website, todo_list.get_tasks, todo_list.add_task, todo_list.complete_task, todo_list.find_task_by_id, todo_list.find_tasks_by_name, todo_list.remove_task]
+tools = [toast_notification.send_toast, code_runner.run_command, website_handler.open_website, todo_list.get_tasks, todo_list.add_task, todo_list.complete_task, todo_list.find_task_by_id, todo_list.find_tasks_by_name, todo_list.remove_task]
 
 def start_chat():
     global first_messsage, use_history, tools
