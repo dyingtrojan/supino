@@ -20,8 +20,8 @@ def run_command(command=""):
             command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True
         )
         return {
-            "success": process.returncode == 0,
-            "exit_code": process.returncode,
+            "success": 0,
+            "exit_code": process.returncode if process.returncode != "None" else "No return code, probably the process is still running.",
             "message": f"Command started with PID {process.pid}",
             "completed": True,
         }
@@ -30,7 +30,8 @@ def run_command(command=""):
             "success": False,
             "error": type(e).__name__,
             "message": str(e),
-            "completed": True
+            "completed": True,
+            "exit_code": process.returncode
         }
 
 def kill_process(pid):

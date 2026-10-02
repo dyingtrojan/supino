@@ -4,6 +4,8 @@ from speech import text_to_speech
 from config import settings
 from pathlib import Path
 from misc import colors, serialize_to_json
+from rich.console import Console
+
 
 first_messsage = ""
 use_history = ""
@@ -11,7 +13,9 @@ tools = [toast_notification.send_toast, code_runner.run_command, website_handler
 
 def start_chat():
     global first_messsage, use_history, tools
-    
+
+    console = Console()
+
     available_functions = {func.__name__: func for func in tools} # biggest refactoring ever
     
     settings.load_settings()
@@ -32,7 +36,7 @@ def start_chat():
                     
                     if use_history.lower() == 'y' or use_history.lower() == 'a':
                         if use_history.lower() == 'a':
-                            settings.settings["always_load_chat"] == True
+                            settings.settings["always_load_chat"] = True
 
                         messages = settings.load_history()
                         messages.append({"role": "user", "content": "I'm Back."})
@@ -50,6 +54,8 @@ def start_chat():
         except Exception as e:
             print(f"An error occured: {e}")
 
+    console.rule("Starting chat...")
+    
     anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True)
     content = ""
     
@@ -61,6 +67,7 @@ def start_chat():
     text_to_speech.speak(content, settings.settings["enable_tts"])
     messages.append({"role": "assistant", "content": content})
     settings.add_to_history({"role": "assistant", "content": content})
+
 
     while True:
         content = ""
@@ -82,19 +89,32 @@ def start_chat():
         settings.add_to_history({"role": "user", "content": question})
         
         while True:
-            anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True, think=False)
+            anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True)
             tool_calls = []
             
             tools_index = 0
             print('\n')
             print("Bot: ", end='', flush=True)
-            
+
+            thinking = False
+
             for chunk in anwser:
-                print(chunk.message.content, end='', flush=True)
+                if chunk.message.thinking:
+                    if not thinking:
+                        print(f"{colors.txt_colors['dark_gray']}Thinking...\n \n")
+                        thinking = True
+
+                    print(chunk.message.thinking, end='', flush=True)
+                
+                if chunk.message.content:
+                    if thinking:
+                        print(f"{colors.txt_colors['RESET']}\n", end='', flush=True)
+                        thinking = False
+                    print(chunk.message.content, end='', flush=True)
                 content += chunk.message.content
                 if chunk.message.tool_calls:
                     tool_calls.extend(chunk.message.tool_calls)
-
+            print('\n')
             text_to_speech.speak(content, settings.settings["enable_tts"])
 
             if tool_calls:

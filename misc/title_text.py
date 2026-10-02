@@ -1,6 +1,7 @@
 import pyfiglet, subprocess
 from . import colors
 
+
 def show_title():
     title_screen = pyfiglet.figlet_format("S U P I N O", font="alligator2")
     
