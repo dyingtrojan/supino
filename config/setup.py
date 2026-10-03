@@ -1,6 +1,7 @@
 from pathlib import Path
-import ollama
+import ollama, platform
 from . import settings
+from rich.console import Console
 
 settings_path = Path(rf"{Path.home()}\AppData\Local\Supino\settings.json")
 history_path = Path(rf"{Path.home()}\AppData\Local\Supino\history.json")
@@ -10,13 +11,15 @@ system_prompt = ""
 first_messsage = ""
 always_load_history = ''
 enable_tts = ''
-# TODO: add custom stop conversation message.
+custom_end_chat_message = ""
 available_models = []
 model_list = ollama.list()
-
+running_os = platform.system()
 
 def run_setup():
-    global model_name, save_history, system_prompt, first_messsage, always_load_history, enable_tts
+    global model_name, save_history, system_prompt, first_messsage, always_load_history, enable_tts, custom_end_chat_message, running_os
+    console = Console()
+    console.rule("SETUP")
     while not model_name:
         print("MODELS: ")
         i = 1
@@ -26,6 +29,7 @@ def run_setup():
                 available_models.append(model.model)
                 print(str(i) + " | " + model.model)
                 i += 1
+
         choose_model = 0
         while choose_model < 0 or choose_model > i or not choose_model:
             try:
@@ -60,10 +64,12 @@ def run_setup():
         if enable_tts.lower() == "n":
             settings.settings['enable_tts'] = False
             break
+    while not custom_end_chat_message:
+        custom_end_chat_message = input("Type your custom end chat message: ")
     while not system_prompt:
-        system_prompt = input("Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands.'): ")
+        system_prompt = input(f"Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has access to the user's local machine. Only use valid {running_os} commands.): ")
         if not system_prompt:
-            system_prompt = "You are a helpful and offline assistant, and has acess to the user's local machine. Only use valid CMD (Windows Command Prompt) commands."
+            system_prompt = f"You are a helpful and offline assistant, and has access to the user's local machine. Only use valid {running_os} commands."
         settings.settings["system_prompt"] = system_prompt
         break
     settings.save_settings()

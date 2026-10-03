@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, ollama
 
 def open_website(url=""):
     """
@@ -7,7 +7,22 @@ def open_website(url=""):
     if not r"https://" in url:
         url = fr"https://{url}"
     try:
-        subprocess.Popen(["start", url], shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE)
-        return 1
+        process = subprocess.Popen(["start", url], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        stdout, stderr = process.communicate()
+        output = stdout
+        errors = stderr
+        return {
+            "url": url,
+            "return-code": process.returncode,
+            "output": output,
+            "errors": errors
+        }
     except Exception as e:
         return e
+
+def web_search(search: str):
+    try:
+        response = ollama.web_search(search)
+        return f"The following results appeared: {response}"
+    except Exception as e:
+        return f"Error: {e}"

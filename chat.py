@@ -1,17 +1,21 @@
 import ollama
-from tools import apps_handler, toast_notification, code_runner, website_handler, todo_list
+from tools import toast_notification, code_runner, website_handler, todo_list
 from speech import text_to_speech
 from config import settings
 from pathlib import Path
-from misc import colors
+from misc import colors, serialize_to_json
+from rich.console import Console
+
 
 first_messsage = ""
 use_history = ""
-tools = [toast_notification.send_toast, code_runner.run_command, apps_handler.start_app, apps_handler.find_app, website_handler.open_website, todo_list.get_tasks, todo_list.add_task, todo_list.complete_task, todo_list.find_task_by_id, todo_list.find_tasks_by_name, todo_list.remove_task]
+tools = [toast_notification.send_toast, code_runner.run_command, website_handler.open_website, website_handler.web_search ,todo_list.get_tasks, todo_list.add_task, todo_list.complete_task, todo_list.find_task_by_id, todo_list.find_tasks_by_name, todo_list.remove_task, todo_list.edit_task]
 
 def start_chat():
     global first_messsage, use_history, tools
-    
+
+    console = Console()
+
     available_functions = {func.__name__: func for func in tools} # biggest refactoring ever
     
     settings.load_settings()
@@ -29,9 +33,10 @@ def start_chat():
             while not use_history:
                 use_history = input("There is an chat history saved. Do you want to proceed this conversation?\n (y/n/a (always))")
                 if use_history.lower() != 'n' or use_history.lower() != "no":
+                    
                     if use_history.lower() == 'y' or use_history.lower() == 'a':
                         if use_history.lower() == 'a':
-                            settings.settings["always_load_chat"] == True
+                            settings.settings["always_load_chat"] = True
 
                         messages = settings.load_history()
                         messages.append({"role": "user", "content": "I'm Back."})
@@ -49,6 +54,8 @@ def start_chat():
         except Exception as e:
             print(f"An error occured: {e}")
 
+    console.rule("Starting chat...")
+    
     anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True)
     content = ""
     
@@ -81,34 +88,77 @@ def start_chat():
         settings.add_to_history({"role": "user", "content": question})
         
         while True:
-            anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True, think=False)
+            anwser = ollama.chat(model=model_name, messages=messages, tools=tools, stream=True)
             tool_calls = []
             
             tools_index = 0
             print('\n')
             print("Bot: ", end='', flush=True)
-            
+
+            thinking = False
+
             for chunk in anwser:
-                print(chunk.message.content, end='', flush=True)
+                if chunk.message.thinking:
+                    if not thinking:
+                        print(f"{colors.txt_colors['dark_gray']}Thinking...\n \n")
+                        thinking = True
+
+                    print(chunk.message.thinking, end='', flush=True)
+                
+                if chunk.message.content:
+                    if thinking:
+                        print(f"{colors.txt_colors['RESET']}\n", end='', flush=True)
+                        thinking = False
+                    print(chunk.message.content, end='', flush=True)
                 content += chunk.message.content
                 if chunk.message.tool_calls:
                     tool_calls.extend(chunk.message.tool_calls)
+            print('\n')
             text_to_speech.speak(content, settings.settings["enable_tts"])
-            messages.append({"role": "assistant", "content": content})
-            settings.add_to_history({"role": "tool", "content": content})
+
             if tool_calls:
+                history_messages = {
+                    "role": "assistant", "content": content
+                }
+                history_messages["tool_calls"] = [
+                    {
+                        "function": {
+                            "name": tool.function.name,
+                            "arguments": tool.function.arguments
+                        }
+                    }
+                    for tool in tool_calls
+                ]
+                messages.append(history_messages)
+                settings.add_to_history(history_messages)
                 for tool in tool_calls:
                     func = available_functions.get(tool.function.name)
                     if func:
-                        if tool.function.name == "get_task":
-                            print(colors.txt_colors["yellow"] + "Loading tasks..." + colors.txt_colors["RESET"])
-                        elif tool.function.name == "add_task":
-                            print(colors.txt_colors["yellow"] + f"Adding task: {tool.function.arguments["name"]}" + colors.txt_colors["RESET"])
-                        else:
-                            print(colors.txt_colors["yellow"] + "Running tool: " + colors.txt_colors["RESET"] + tool.function.name)
-                            print(colors.txt_colors["yellow"] + "Tool arguments: " + colors.txt_colors["RESET"] + str(tool.function.arguments))
+                        match tool.function.name:
+                            case "get_tasks":
+                                print(colors.txt_colors["yellow"] + "Loading tasks..." + colors.txt_colors["RESET"])
+                                break
+                            case "add_task":
+                                print(colors.txt_colors["yellow"] + f"Adding task: {tool.function.arguments["name"]}" + colors.txt_colors["RESET"])
+                                break
+                            case "edit_task":
+                                print(colors.txt_colors["yellow"] + f"Editing task: {tool.function.arguments["name"]}")
+                                break
+                            case "find_task_by_id":
+                                print(colors.txt_colors["yellow"] + f"Searching for task with ID: {tool.function.arguments["task_id"]}" + colors.txt_colors["RESET"])
+                                break
+                            case "find_task_by_name":
+                                print(colors.txt_colors["yellow"] + f"Searching id task from name: {tool.function.arguments["task_name"]}" + colors.txt_colors["RESET"])
+                                break
+                            case "web_search":
+                                print(colors.txt_colors["green"] + f"Trying to websearch: {tool.function.arguments["search"]}" + colors.txt_colors["RESET"])
+                            case _:
+                                print(colors.txt_colors["yellow"] + "Running tool: " + colors.txt_colors["RESET"] + tool.function.name)
+                                print(colors.txt_colors["yellow"] + "Tool arguments: " + colors.txt_colors["RESET"] + str(tool.function.arguments))
+                                break
 
                     result = func(**tool.function.arguments)
+
                     messages.append({"role": "tool", "name": tool.function.name, "content": str(result)})
                     settings.add_to_history({"role": "tool", "name": tool.function.name, "content": str(result)})
                     tools_index += 1
