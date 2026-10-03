@@ -20,7 +20,7 @@ pip install ollama pyfiglet plyer pyttsx3
 
 ```
 
-After that, you can run on your terminal:
+3. After that, you can run on your terminal:
 
 ```
 
@@ -28,3 +28,4 @@ git clone https://github.com/dyingtrojan/supino.git
 
 ```
 
+4. Open the "supino" folder, and run whatever IDE you want.
