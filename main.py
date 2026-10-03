@@ -22,6 +22,8 @@ if __name__ == "__main__":
                 chat.start_chat()
             except Exception as e:
                 print(e)
+                settings.save_history()
+                
         case "setup":
             try:
                 setup.run_setup()
