@@ -9,7 +9,7 @@ from rich.console import Console
 
 first_messsage = ""
 use_history = ""
-tools = [toast_notification.send_toast, code_runner.run_command, website_handler.open_website, todo_list.get_tasks, todo_list.add_task, todo_list.complete_task, todo_list.find_task_by_id, todo_list.find_tasks_by_name, todo_list.remove_task]
+tools = [toast_notification.send_toast, code_runner.run_command, website_handler.open_website, website_handler.web_search ,todo_list.get_tasks, todo_list.add_task, todo_list.complete_task, todo_list.find_task_by_id, todo_list.find_tasks_by_name, todo_list.remove_task, todo_list.edit_task]
 
 def start_chat():
     global first_messsage, use_history, tools
@@ -67,7 +67,6 @@ def start_chat():
     text_to_speech.speak(content, settings.settings["enable_tts"])
     messages.append({"role": "assistant", "content": content})
     settings.add_to_history({"role": "assistant", "content": content})
-
 
     while True:
         content = ""
@@ -135,13 +134,28 @@ def start_chat():
                 for tool in tool_calls:
                     func = available_functions.get(tool.function.name)
                     if func:
-                        if tool.function.name == "get_task":
-                            print(colors.txt_colors["yellow"] + "Loading tasks..." + colors.txt_colors["RESET"])
-                        elif tool.function.name == "add_task":
-                            print(colors.txt_colors["yellow"] + f"Adding task: {tool.function.arguments["name"]}" + colors.txt_colors["RESET"])
-                        else:
-                            print(colors.txt_colors["yellow"] + "Running tool: " + colors.txt_colors["RESET"] + tool.function.name)
-                            print(colors.txt_colors["yellow"] + "Tool arguments: " + colors.txt_colors["RESET"] + str(tool.function.arguments))
+                        match tool.function.name:
+                            case "get_tasks":
+                                print(colors.txt_colors["yellow"] + "Loading tasks..." + colors.txt_colors["RESET"])
+                                break
+                            case "add_task":
+                                print(colors.txt_colors["yellow"] + f"Adding task: {tool.function.arguments["name"]}" + colors.txt_colors["RESET"])
+                                break
+                            case "edit_task":
+                                print(colors.txt_colors["yellow"] + f"Editing task: {tool.function.arguments["name"]}")
+                                break
+                            case "find_task_by_id":
+                                print(colors.txt_colors["yellow"] + f"Searching for task with ID: {tool.function.arguments["task_id"]}" + colors.txt_colors["RESET"])
+                                break
+                            case "find_task_by_name":
+                                print(colors.txt_colors["yellow"] + f"Searching id task from name: {tool.function.arguments["task_name"]}" + colors.txt_colors["RESET"])
+                                break
+                            case "web_search":
+                                print(colors.txt_colors["green"] + f"Trying to websearch: {tool.function.arguments["search"]}" + colors.txt_colors["RESET"])
+                            case _:
+                                print(colors.txt_colors["yellow"] + "Running tool: " + colors.txt_colors["RESET"] + tool.function.name)
+                                print(colors.txt_colors["yellow"] + "Tool arguments: " + colors.txt_colors["RESET"] + str(tool.function.arguments))
+                                break
 
                     result = func(**tool.function.arguments)
 

@@ -1,4 +1,4 @@
-import subprocess
+import subprocess, ollama
 
 def open_website(url=""):
     """
@@ -19,3 +19,10 @@ def open_website(url=""):
         }
     except Exception as e:
         return e
+
+def web_search(search: str):
+    try:
+        response = ollama.web_search(search)
+        return f"The following results appeared: {response}"
+    except Exception as e:
+        return f"Error: {e}"

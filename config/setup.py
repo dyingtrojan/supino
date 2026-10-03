@@ -67,7 +67,7 @@ def run_setup():
     while not custom_end_chat_message:
         custom_end_chat_message = input("Type your custom end chat message: ")
     while not system_prompt:
-        system_prompt = input(f"Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has access to the user's local machine. Only use valid {running_os} commands.: ")
+        system_prompt = input(f"Type your system prompt (leave empty for 'You are a helpful and offline assistant, and has access to the user's local machine. Only use valid {running_os} commands.): ")
         if not system_prompt:
             system_prompt = f"You are a helpful and offline assistant, and has access to the user's local machine. Only use valid {running_os} commands."
         settings.settings["system_prompt"] = system_prompt
