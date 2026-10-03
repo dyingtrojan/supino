@@ -31,19 +31,21 @@ class TodoTask:
         )
 
 tasks = []
-tasks_path = Path(rf"{Path.home()}\AppData\Local\Supino\task.json")
-folder = Path(rf"{Path.home()}\AppData\Local\Supino")
+tasks_path = Path(rf"{Path.home()}/Supino/tasks.json")
+folder = Path(rf"{Path.home()}/Supino")
 
 def save_tasks():
     global tasks
     if not Path(tasks_path).is_file():
         folder.mkdir(parents=True, exist_ok=True)
+
     with open(tasks_path, 'w', encoding='utf-8') as file:
         json.dump([task.to_dict() for task in tasks], file, indent=4, ensure_ascii=False)   
 
 def add_task(name:str, tags: list, completed:bool = False):
     new_id = len(tasks)
     task = TodoTask(id=new_id, name=name, tags=tags, completed=completed)
+
     try:
         tasks.append(task)
         return f"Task {task.name_task} added succesfully with ID {task.id - 1}."
@@ -87,8 +89,17 @@ def complete_task(task_id: int):
     return None
 
 def remove_task(task_id:int):
+    global tasks
     for task in tasks:
         if task.id == task_id:
             tasks.pop(task_id)
             return f"Task {task_id} Removed."
     return None
+
+def edit_task(task_id: int, name: str, tags: str):
+    global tasks
+    for task in tasks:
+        if task.id == task_id:
+            task.name_task = name
+            task.tags = tags
+    return f"Task from Id {task_id} edited."
